@@ -3,7 +3,9 @@ package com.example.settings.category.components;
 import com.example.settings.category.Category;
 import com.example.settings.category.CategoryService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -17,6 +19,11 @@ public class CreateCategoryFormComponent extends FormLayout {
     private Runnable onSaveCallBack;
 
     public CreateCategoryFormComponent() {
+
+        setRowSpacing("20px");
+
+        H4 h4 = new H4("Create Category");
+        add(h4);
 
         TextField nameField = new TextField();
         nameField.setPlaceholder("Category name");
@@ -38,6 +45,8 @@ public class CreateCategoryFormComponent extends FormLayout {
         Button cancelButton = new Button("Cancel", e -> {
            binder.readBean(null);
         });
+
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
         buttons.add(saveButton, cancelButton);
         add(buttons);

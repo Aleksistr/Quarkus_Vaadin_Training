@@ -3,6 +3,7 @@ package com.example.settings.category.components;
 import com.example.settings.category.Category;
 import com.example.settings.category.CategoryService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -29,7 +30,12 @@ public class CategoryListComponent extends VerticalLayout {
             Button deleteButton = new Button("Delete", event -> {
                 deleteCategory(category);
             });
+            deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
             horizontalLayout.add(deleteButton);
+            horizontalLayout.setAlignItems(Alignment.CENTER);
+            horizontalLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+
             return horizontalLayout;
         }));
 
