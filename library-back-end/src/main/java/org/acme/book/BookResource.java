@@ -72,6 +72,10 @@ public class BookResource {
 
         if (incoming == null || incoming.getTitle() == null || incoming.getTitle().isBlank()) {
             throw new BadRequestException("Field 'name' is required.");
+        } else {
+            if (incoming.getCategory() == null) {
+                throw new BadRequestException("Field 'category' is required.");
+            }
         }
 
         Book book = bookService.createBook(incoming);

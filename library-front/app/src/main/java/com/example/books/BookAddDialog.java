@@ -1,33 +1,47 @@
 package com.example.books;
 
-import com.vaadin.flow.component.HasComponents;
+import com.example.settings.category.Category;
+import com.example.settings.category.CategoryService;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+
+import java.util.List;
 
 public class BookAddDialog extends Dialog {
 
     private final BookService bookService = new BookService();
+    private final CategoryService categoryService = new CategoryService();
     private final Binder<Book> binder = new Binder<>(Book.class);
-    private final TextField titleField = new TextField("Title");
-    private final NumberField priceField = new NumberField("Price");
 
     private Runnable onSaveCallback;
 
     public BookAddDialog() {
+        List<Category> categories = categoryService.getCategories();
+
         setHeaderTitle("Add a Book");
 
         // Define the form Layout
         FormLayout formLayout = new FormLayout();
+        TextField titleField = new TextField("Title");
         titleField.setRequired(true);
         titleField.setWidthFull();
 
-        formLayout.add(titleField, priceField);
+        Select<Category> categoryField = new Select<>("Category");
+        categoryField.setItems(categories);
+        categoryField.setRenderer(new ComponentRenderer<Component, Category>(category -> new Span(category.getName())));
+
+        NumberField priceField = new NumberField("Price");
+        formLayout.add(titleField, priceField, categoryField);
         add(formLayout);
 
         binder.forField(titleField)
@@ -38,6 +52,10 @@ public class BookAddDialog extends Dialog {
                 .asRequired("Book price is required")
                 .withValidator(value -> value > 0, value -> "Price should be greater than 0")
                 .bind(Book::getPrice, Book::setPrice);
+
+        binder.forField(categoryField)
+                .asRequired("Book category is required")
+                .bind(Book::getCategory, Book::setCategory);
 
         Button saveButton = new Button("Save", event -> {
             saveBook();
@@ -67,9 +85,7 @@ public class BookAddDialog extends Dialog {
                 binder.readBean(null);
                 onSaveCallback.run();
             }
-
             close();
-
         }
         catch (Exception e) {
             Notification.show("Error while saving the book: " + e.getMessage());

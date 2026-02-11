@@ -1,7 +1,8 @@
 package com.example.settings.category;
 
 import com.example.settings.SettingsLayout;
-import com.vaadin.flow.component.html.Span;
+import com.example.settings.category.components.CategoryListComponent;
+import com.example.settings.category.components.CreateCategoryFormComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -16,6 +17,12 @@ public class CategoryTabView extends HorizontalLayout {
     public CategoryTabView() {
         setSizeFull();
 
+        CategoryListComponent categoryListComponent = new CategoryListComponent();
+        CreateCategoryFormComponent createCategoryFormComponent = new CreateCategoryFormComponent();
+
+        createCategoryFormComponent.setOnSaveCallBack(categoryListComponent::refreshList);
+
+        add(categoryListComponent, createCategoryFormComponent);
     }
 
 }

@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Collections;
 import java.util.List;
 
 public class CategoryService {
@@ -26,9 +25,37 @@ public class CategoryService {
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return Collections.singletonList(mapper.readValue(response.body(), Category.class));
+            return mapper.readValue(response.body(), mapper.getTypeFactory().constructCollectionType(List.class, Category.class));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Failed to get category list", e);
+        }
+    }
+
+    public void deleteCategory(Category category) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL.concat("/").concat(category.getId().toString())))
+                    .header("Accept", "application/json")
+                    .DELETE()
+                    .build();
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Failed to delete category", e);
+        }
+    }
+
+    public Category createCategory(Category category) {
+        String json = mapper.writeValueAsString(category);
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL))
+                    .header("Accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return mapper.readValue(response.body(), Category.class);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Failed to create category", e);
         }
     }
 }

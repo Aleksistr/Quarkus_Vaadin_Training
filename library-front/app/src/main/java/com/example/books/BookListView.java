@@ -1,11 +1,9 @@
 package com.example.books;
 
 import com.example.ui.MainLayout;
-import com.vaadin.flow.component.ModalityMode;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -32,11 +30,15 @@ public class BookListView extends VerticalLayout {
     public BookListView() {
         setSizeFull();
 
-
         grid.addColumn(Book::getTitle).setHeader("Title").setKey("title").setSortable(true);
         grid.addColumn(
                 new NumberRenderer<>(Book::getPrice, NumberFormat.getCurrencyInstance())
         ).setHeader("Price").setKey("price").setSortable(true);
+        grid.addColumn(
+                new ComponentRenderer<>(book ->
+                    new Span(book.getCategory().getName())
+                )
+        ).setHeader("Category").setKey("category").setSortable(true);
 
         grid.addColumn(new ComponentRenderer<>(book -> {
             HorizontalLayout buttons = new HorizontalLayout();
