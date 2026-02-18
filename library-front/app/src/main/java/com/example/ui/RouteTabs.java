@@ -1,31 +1,50 @@
 package com.example.ui;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class RouteTabs extends Tabs implements BeforeEnterObserver {
-    private final Map<RouterLink, Tab> routerLinkTabMap = new HashMap<>();
 
-    public void add(RouterLink routerLink) {
-        routerLink.setHighlightCondition(HighlightConditions.sameLocation());
-        routerLink.setHighlightAction(
-                (link, shouldHighlight) -> {
-                    if (shouldHighlight) setSelectedTab(routerLinkTabMap.get(routerLink));
-                }
-        );
-        routerLinkTabMap.put(routerLink, new Tab(routerLink));
-        add(routerLinkTabMap.get(routerLink));
+public class RouteTabs extends Tabs {
+
+    private final Map<Tab, Class<? extends Component>> routeMap = new HashMap<>();
+
+    public Tab add(String label, Class<? extends Component> targetView) {
+        RouterLink link = new RouterLink(label, targetView);
+        Tab tab = new Tab(link);
+
+        routeMap.put(tab, targetView);
+
+        link.setHighlightCondition(HighlightConditions.sameLocation());
+        link.setHighlightAction((l, highlight) -> {
+            if (highlight) setSelectedTab(tab);
+        });
+
+        add(tab);
+        return tab;
     }
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        setSelectedTab(null);
+    public void navigateTo(Tab tab) {
+        Class<? extends Component> target = routeMap.get(tab);
+        if (target != null) {
+            UI.getCurrent().navigate(target);
+        }
     }
+
+
+    public Tab findTabForView(Class<? extends Component> viewClass) {
+        return routeMap.entrySet().stream()
+                .filter(e -> e.getValue().equals(viewClass))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+    }
+
+
 }

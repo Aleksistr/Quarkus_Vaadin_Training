@@ -2,6 +2,7 @@ package com.example.ui;
 
 import com.example.books.BookListView;
 import com.example.settings.SettingsLayout;
+import com.example.settings.category.CategoryTabView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
@@ -18,7 +19,7 @@ public class MainLayout extends AppLayout {
 
         final VerticalLayout menuBar = new VerticalLayout();
         menuBar.add(new RouterLink(BookListView.TITLE, BookListView.class));
-        menuBar.add(new RouterLink(SettingsLayout.TITLE, SettingsLayout.class));
+        menuBar.add(new RouterLink(SettingsLayout.TITLE, CategoryTabView.class));
 
         addToDrawer(menuBar);
     }
