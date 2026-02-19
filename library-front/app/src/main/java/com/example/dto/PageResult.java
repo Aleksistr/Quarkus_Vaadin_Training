@@ -5,7 +5,7 @@ import java.util.List;
 public class PageResult<T> {
 
     private List<T> items;
-    private Long totalElements;
+    private int totalElements;
     private int page;
     private int size;
     private int totalPages;
@@ -13,7 +13,7 @@ public class PageResult<T> {
     private boolean hasPrevious;
 
     public List<T> getItems() { return items; }
-    public long getTotalElements() { return totalElements; }
+    public int getTotalElements() { return totalElements; }
     public int getPage() { return page; }
     public int getSize() { return size; }
     public int getTotalPages() { return totalPages; }

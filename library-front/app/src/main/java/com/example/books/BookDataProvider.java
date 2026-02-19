@@ -1,43 +1,55 @@
 package com.example.books;
 
 import com.example.dto.PageResult;
+import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.QuerySortOrder;
 
-public class BookDataProvider {
+import java.util.stream.Stream;
 
-    private final BookService bookService = new BookService();
+public class BookDataProvider extends AbstractBackEndDataProvider<Book, BookFilter> {
 
-    public CallbackDataProvider<Book, String> getDataProvider () {
-        return new CallbackDataProvider<>(
-                query -> {
-                    int page = query.getOffset() / query.getLimit();
-                    int size = query.getLimit();
+    private final BookService bookService;
+    private BookFilter bookFilter = new BookFilter();
 
-                    // SORT extraction
-                    String sortBy = "id";
-                    String sortDirection = "ASC";
-
-                    if (!query.getSortOrders().isEmpty()) {
-                        var sortOrder = query.getSortOrders().get(0);
-                        sortBy = sortOrder.getSorted();
-                        sortDirection = sortOrder.getDirection().name();
-                    }
-
-                    String filter = query.getFilter().orElse(null);
-                    PageResult<Book> result = bookService.getBooks(page, size, sortBy, sortDirection, filter);
-
-                    return result.getItems().stream();
-                },
-                query -> {
-                    PageResult<Book> result = bookService.getBooks(
-                            0,
-                            query.getLimit(),
-                            "id",
-                            "ASC",
-                            query.getFilter().orElse(null)
-                    );
-                    return (int) result.getTotalElements();
-                }
-        );
+    public BookDataProvider(BookService bookService) {
+        this.bookService = bookService;
     }
+
+    @Override
+    protected Stream<Book> fetchFromBackEnd(Query<Book, BookFilter> query) {
+        // Pagination
+        int offset = query.getOffset();
+        int limit = query.getLimit() > 0 ? query.getLimit() : 20;
+        int page = offset / limit;
+
+        String sort = query.getSortOrders().isEmpty()
+                ? null
+                : toSortQuery(query.getSortOrders().getFirst());
+        PageResult<Book> result = bookService.getBooks(page, limit, sort, bookFilter);
+
+        return result.getItems().stream();
+    }
+
+    @Override
+    protected int sizeInBackEnd(Query<Book, BookFilter> query) {
+
+        String sort = query.getSortOrders().isEmpty()
+                ? null
+                : toSortQuery(query.getSortOrders().get(0));
+        PageResult<Book> result = bookService.getBooks(1, 20, sort, bookFilter);
+
+        return result.getTotalElements();
+    }
+
+    public void applyFilter(BookFilter filter) {
+        bookFilter = filter;
+        refreshAll();
+    }
+
+    private String toSortQuery(QuerySortOrder order) {
+        return order.getSorted() + "," + (order.getDirection().getShortName().equals("asc") ? "asc" : "desc");
+    }
+
 }
