@@ -16,25 +16,20 @@ public class BookService {
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public PageResult<Book> getBooks(int page, int size, String sort, String direction, String nameFilter){
-
+    public PageResult<Book> getBooks(int page, int size, String sort, BookFilter filter){
+        String json = mapper.writeValueAsString(filter);
+        System.out.println(json);
         try {
-            String url = BASE_URL
-                    + "?page=" + page
-                    + "&size=" + size
-                    + "&sort=" + sort
-                    + "&direction=" + direction;
-
-            if (nameFilter != null && !nameFilter.isBlank()) {
-                url += "&name=" + nameFilter;
-            }
+            String url = BASE_URL.concat("search")
+                    .concat("?page=").concat(String.valueOf(page))
+                    .concat("&size=").concat(String.valueOf(size))
+                    .concat("&sort=").concat(String.valueOf(sort));
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Accept", "application/json")
-                    .GET()
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
-
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             return mapper.readValue(response.body(),
@@ -48,6 +43,7 @@ public class BookService {
 
     public Book addBook(Book book){
         String json = mapper.writeValueAsString(book);
+
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL))

@@ -1,6 +1,5 @@
 package org.acme.book;
 
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -8,9 +7,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import org.acme.pagination.PageRequest;
 import org.acme.pagination.PageResult;
-import org.acme.pagination.SortRequest;
 
 import java.net.URI;
 
@@ -22,45 +19,15 @@ public class BookResource {
     @Inject
     BookService bookService;
 
-    @GET
-    public PageResult<Book> getPaged(
+    @POST
+    @Path("/search")
+    public PageResult<Book> search(
             @QueryParam("page") @DefaultValue("0") int page,
-            @QueryParam("size") @DefaultValue("10") int size,
-            @QueryParam("sort") @DefaultValue("id") String sortBy,
-            @QueryParam("direction") @DefaultValue("ASC") String direction,
-            @QueryParam("name") String name
+            @QueryParam("size") @DefaultValue("20") int size,
+            @QueryParam("sort") String sort,
+            BookFilter bookFilter
     ) {
-
-        SortRequest.Direction dir =
-                "DESC".equalsIgnoreCase(direction)
-                        ? SortRequest.Direction.DESC
-                        : SortRequest.Direction.ASC;
-
-        PageRequest pageable = new PageRequest(
-                page,
-                size,
-                new SortRequest(sortBy, dir)
-        );
-
-        PanacheQuery<Book> query;
-
-        if (name != null && !name.isBlank()) {
-            query = Book.find("lower(name) like ?1", pageable.toPanacheSort(),
-                    "%" + name.toLowerCase() + "%");
-        } else {
-            query = Book.findAll(pageable.toPanacheSort());
-        }
-
-        long total = query.count();
-        query.page(pageable.toPanachePage());
-
-        return new PageResult<>(
-                query.list(),
-                total,
-                pageable.page,
-                pageable.size
-        );
-
+        return bookService.searchBooks(page, size, sort, bookFilter);
     }
 
     @POST

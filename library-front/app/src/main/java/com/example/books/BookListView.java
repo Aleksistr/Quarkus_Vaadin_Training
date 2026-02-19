@@ -13,6 +13,8 @@ import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.jspecify.annotations.NonNull;
 
 import java.text.NumberFormat;
 
@@ -26,9 +28,10 @@ public class BookListView extends VerticalLayout {
 
     private final BookService bookService = new BookService();
     private final Grid<Book> grid = new Grid<>(Book.class, false);
+    private final BookDataProvider dataProvider;
 
     public BookListView() {
-        setSizeFull();
+        this.dataProvider = new BookDataProvider(bookService);
 
         grid.addColumn(Book::getTitle).setHeader("Title").setKey("title").setSortable(true);
         grid.addColumn(
@@ -53,6 +56,26 @@ public class BookListView extends VerticalLayout {
             return buttons;
         })).setHeader("Action");
 
+        grid.setPageSize(20);
+        grid.setDataProvider(dataProvider);
+
+        HorizontalLayout gridHeaderAction = getHorizontalLayout();
+
+        add(gridHeaderAction, grid);
+        expand(grid);
+    }
+
+    private @NonNull HorizontalLayout getHorizontalLayout() {
+        HorizontalLayout gridHeaderAction =  new HorizontalLayout();
+        gridHeaderAction.setWidthFull();
+        gridHeaderAction.setAlignItems(Alignment.END);
+
+        BookFilterBar bookFilterBar = new BookFilterBar();
+        bookFilterBar.addBookFilterListener(e -> {
+            BookFilter filter = e.getFilter();
+            dataProvider.applyFilter(filter);
+        });
+
         Button addBookButton = new Button("Add Book");
 
         BookAddDialog bookAddDialog = new BookAddDialog();
@@ -62,11 +85,8 @@ public class BookListView extends VerticalLayout {
             bookAddDialog.open();
         });
 
-        BookDataProvider provider = new BookDataProvider();
-        grid.setDataProvider(provider.getDataProvider());
-
-        add(addBookButton, grid);
-        expand(grid);
+        gridHeaderAction.add(bookFilterBar, addBookButton);
+        return gridHeaderAction;
     }
 
     /*
@@ -88,9 +108,6 @@ public class BookListView extends VerticalLayout {
         confirmDialog.open();
     }
 
-    /*
-     * Call the back end service to delete the book
-     */
     private void removeBook(Book book) {
         this.bookService.removeBook(book);
         grid.getDataProvider().refreshAll();

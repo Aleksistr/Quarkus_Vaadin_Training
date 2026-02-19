@@ -2,6 +2,7 @@ package org.acme.book;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.acme.pagination.PageResult;
 
 import java.util.List;
 
@@ -9,11 +10,19 @@ import java.util.List;
 public class BookService {
 
     @Inject
-    private BookRepository bookRepository;
+    BookRepository bookRepository;
 
-    public List<Book> getAllBooks() {
-        return bookRepository.listAll();
-    }
+   public PageResult<Book> searchBooks (
+           int page,
+           int size,
+           String sort,
+           BookFilter filter
+   ) {
+       List<Book> books = bookRepository.findBooks(page, size, sort, filter);
+        long total = bookRepository.countBooks(filter);
+
+        return new PageResult<Book>(books, total);
+   }
 
     public Book createBook(Book book){
         bookRepository.persist(book);
