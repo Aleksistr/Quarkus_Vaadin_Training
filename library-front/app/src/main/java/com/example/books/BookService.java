@@ -18,7 +18,6 @@ public class BookService {
 
     public PageResult<Book> getBooks(int page, int size, String sort, BookFilter filter){
         String json = mapper.writeValueAsString(filter);
-        System.out.println(json);
         try {
             String url = BASE_URL.concat("search")
                     .concat("?page=").concat(String.valueOf(page))
