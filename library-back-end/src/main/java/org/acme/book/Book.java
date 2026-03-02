@@ -1,26 +1,39 @@
 package org.acme.book;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.acme.category.Category;
 
 @Entity
-public class Book extends PanacheEntity {
+@Table(name = "BOOK")
+public class Book {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank
+    @Column(unique = true, name = "title")
     private String title;
+
+    @NotNull
+    @Column(name = "price")
     private Double price;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "category_id",
+            nullable = true,
+            foreignKey = @ForeignKey(name = "fk_book_category")
+    )
     private Category category;
 
     public Book() {}
 
-    public Book(String title, Double price, Category category) {
+    public Book(Long id, String title, Double price, Category category) {
+        this.id = id;
         this.title = title;
         this.price = price;
         this.category = category;
@@ -33,6 +46,7 @@ public class Book extends PanacheEntity {
         return price;
     }
     public Category getCategory() { return category; }
+    public Long getId() { return id; }
 
     public void setCategory(Category category) { this.category = category; }
     public void setPrice(Double price) {
@@ -41,5 +55,6 @@ public class Book extends PanacheEntity {
     public void setTitle(String title) {
         this.title = title;
     }
+    public void setId(Long id) { this.id = id; }
 
 }

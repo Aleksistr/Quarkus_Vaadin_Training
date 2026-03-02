@@ -46,7 +46,7 @@ public class BookResource {
         }
 
         Book book = bookService.createBook(incoming);
-        URI location = uriInfo.getAbsolutePathBuilder().path(book.id.toString()).build();
+        URI location = uriInfo.getAbsolutePathBuilder().path(book.getId().toString()).build();
         return Response.created(location).entity(book).build();
 
     }
