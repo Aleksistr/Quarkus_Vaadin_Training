@@ -28,7 +28,7 @@ public class BookRepository implements PanacheRepository<Book> {
 
         if (filter.getTitle() != null && ! filter.getTitle().isEmpty()) {
             query.append(" AND LOWER(title) like :title");
-            params.put("title", "%".concat(filter.getTitle()).concat("%"));
+            params.put("title", "%".concat(filter.getTitle().toLowerCase()).concat("%"));
         }
 
         if (filter.getCategory() != null && filter.getCategory().getId() != null) {

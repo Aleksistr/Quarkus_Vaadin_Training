@@ -39,7 +39,7 @@ public class BookListView extends VerticalLayout {
         ).setHeader("Price").setKey("price").setSortable(true);
         grid.addColumn(
                 new ComponentRenderer<>(book ->
-                    new Span(book.getCategory().getName())
+                    new Span(book.getCategory() != null ? book.getCategory().getName() : "")
                 )
         ).setHeader("Category").setKey("category").setSortable(true);
 

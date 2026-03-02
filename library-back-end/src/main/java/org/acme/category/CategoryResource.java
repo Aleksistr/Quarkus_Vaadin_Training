@@ -33,7 +33,7 @@ public class CategoryResource {
         }
 
         Category category = categoryService.createCategory(incoming);
-        URI location = uriInfo.getAbsolutePathBuilder().path(category.id.toString()).build();
+        URI location = uriInfo.getAbsolutePathBuilder().path(category.getId().toString()).build();
         return Response.created(location).entity(category).build();
     }
 
