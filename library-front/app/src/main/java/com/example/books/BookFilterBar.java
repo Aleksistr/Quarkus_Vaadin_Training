@@ -1,6 +1,7 @@
 package com.example.books;
 
-import com.example.settings.category.Category;
+import com.example.books.entities.BookFilter;
+import com.example.settings.category.entities.Category;
 import com.example.settings.category.CategoryService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;

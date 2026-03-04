@@ -39,10 +39,6 @@ public class BookResource {
 
         if (incoming == null || incoming.getTitle() == null || incoming.getTitle().isBlank()) {
             throw new BadRequestException("Field 'name' is required.");
-        } else {
-            if (incoming.getCategory() == null) {
-                throw new BadRequestException("Field 'category' is required.");
-            }
         }
 
         Book book = bookService.createBook(incoming);
@@ -51,7 +47,20 @@ public class BookResource {
 
     }
 
-    @DELETE()
+    @PUT
+    @Path("{id}")
+    @Transactional
+    public Response updateBook(
+            BookUpdateRequest request,
+            @PathParam("id") Long id,
+            @Context UriInfo uriInfo
+    ) {
+        Book book = bookService.updateBook(id, request);
+        URI location = uriInfo.getAbsolutePathBuilder().path(book.getId().toString()).build();
+        return Response.accepted(location).entity(book).build();
+    }
+
+    @DELETE
     @Path("{id}")
     @Transactional
     public void deleteBook(@PathParam("id") Long id) {

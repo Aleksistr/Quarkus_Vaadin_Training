@@ -1,11 +1,14 @@
 package com.example.books;
 
+import com.example.books.entities.Book;
+import com.example.books.entities.BookFilter;
 import com.example.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -13,7 +16,6 @@ import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.jspecify.annotations.NonNull;
 
 import java.text.NumberFormat;
@@ -51,8 +53,18 @@ public class BookListView extends VerticalLayout {
                 this.deleteBook(book);
             });
             deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            deleteButton.setSuffixComponent(VaadinIcon.CLOSE.create());
 
-            buttons.add(deleteButton);
+            Button updateButton = new Button("Update", clickEvent -> {
+                BookUpdateDialog bookUpdateDialog = new BookUpdateDialog(book);
+                bookUpdateDialog.setOnSaveCallBack(() -> grid.getDataProvider().refreshAll());
+                bookUpdateDialog.open();
+
+            });
+            updateButton.addThemeVariants(ButtonVariant.LUMO_WARNING);
+            updateButton.setSuffixComponent(VaadinIcon.PENCIL.create());
+
+            buttons.add(updateButton, deleteButton);
             return buttons;
         })).setHeader("Action");
 

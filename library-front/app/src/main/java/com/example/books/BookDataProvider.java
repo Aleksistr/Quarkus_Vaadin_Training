@@ -1,8 +1,9 @@
 package com.example.books;
 
+import com.example.books.entities.Book;
+import com.example.books.entities.BookFilter;
 import com.example.dto.PageResult;
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
-import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 
