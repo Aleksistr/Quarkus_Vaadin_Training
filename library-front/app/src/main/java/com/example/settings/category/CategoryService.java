@@ -1,5 +1,6 @@
 package com.example.settings.category;
 
+import com.example.settings.category.entities.Category;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

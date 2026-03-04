@@ -1,6 +1,6 @@
-package com.example.books;
+package com.example.books.entities;
 
-import com.example.settings.category.Category;
+import com.example.settings.category.entities.Category;
 
 public class BookFilter {
 

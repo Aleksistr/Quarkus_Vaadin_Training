@@ -1,5 +1,8 @@
 package com.example.books;
 
+import com.example.books.entities.Book;
+import com.example.books.entities.BookFilter;
+import com.example.books.entities.BookUpdateRequest;
 import com.example.dto.PageResult;
 import tools.jackson.databind.ObjectMapper;
 
@@ -68,6 +71,22 @@ public class BookService {
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Failed to remove a books", e);
+        }
+    }
+
+    public Book updateBook(BookUpdateRequest updateRequest, Long id){
+        String json = mapper.writeValueAsString(updateRequest);
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL.concat("/").concat(id.toString())))
+                    .header("Accept", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return mapper.readValue(response.body(), Book.class);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Failed to update a book", e);
         }
     }
 }
